@@ -39,6 +39,16 @@
     actionHandlers[type] = handler;
     updateSupportedMediaCommands();
   };
+
+  let playbackStart = 0;
+  setInterval(function() {
+    if (navigator.mediaSession.playbackState == "playing") {
+      if (playbackStart == 0) playbackStart = (new Date().getTime() / 1000) - mediaElement.currentTime;
+      mediaElement.currentTime = (new Date().getTime() / 1000) - playbackStart;
+      mediaEvent("timeupdate");
+    }
+  }, 500);
+      
   navigator.mediaSession.setPositionState = function(state) {
     if (state.duration && mediaElement.duration != state.duration) {
       mediaElement.duration = state.duration;
@@ -47,6 +57,9 @@
     if (state.position && mediaElement.currentTime != state.position) {
       mediaElement.currentTime = state.position;
       mediaEvent("timeupdate");
+    }
+    if (state.position) {
+      playbackStart = (new Date().getTime() / 1000) - state.position;
     }
     if (state.playbackRate && mediaElement.playbackRate != state.playbackRate) {
       mediaElement.playbackRate = state.playbackRate;
@@ -94,7 +107,7 @@
       if ("seekto" in actionHandlers) actionHandlers.seekto({seekTime: requestData.currentTime});
     });
     const options = new cast.framework.CastReceiverOptions();
-    options.supportedCommands = cast.framework.messages.Command.STREAM_TRANSFER;
+    options.supportedCommands = cast.framework.messages.Command.STREAM_TRANSFER | cast.framework.messages.Command.SET_VOLUME;
     options.disableIdleTimeout = true;
     options.skipPlayersLoad = true;
     options.mediaElement = mediaElement;

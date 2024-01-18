@@ -72,14 +72,14 @@
       return requestData;
     });
     playerManager.setMessageInterceptor(cast.framework.messages.MessageType.PLAY, async function(requestData) {
-      if (requestData.sessionId) {
+      if (requestData.requestId != 0) {
         if ("play" in actionHandlers) actionHandlers.play();
       } else {
         return requestData;
       }
     });
     playerManager.setMessageInterceptor(cast.framework.messages.MessageType.PAUSE, async function(requestData) {
-      if (requestData.sessionId) {
+      if (requestData.requestId != 0) {
         if ("pause" in actionHandlers) actionHandlers.pause();
       } else {
         return requestData;

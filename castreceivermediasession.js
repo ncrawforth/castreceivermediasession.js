@@ -40,15 +40,15 @@
     updateSupportedMediaCommands();
   };
   navigator.mediaSession.setPositionState = function(state) {
-    if (state.duration) {
+    if (state.duration && mediaElement.duration != state.duration) {
       mediaElement.duration = state.duration;
       mediaEvent("durationchange");
     }
-    if (state.position) {
+    if (state.position && mediaElement.currentTime != state.position) {
       mediaElement.currentTime = state.position;
       mediaEvent("timeupdate");
     }
-    if (state.playbackRate) {
+    if (state.playbackRate && mediaElement.playbackRate != state.playbackRate) {
       mediaElement.playbackRate = state.playbackRate;
       mediaEvent("ratechange");
     }
@@ -67,6 +67,7 @@
       requestData.media.metadata = mediaMetadata;
       let contentUrl = requestData.media.contentUrl || requestData.media.contentId || requestData.media.entity;
       requestData.media.contentUrl = requestData.media.contentId = requestData.media.entity = contentUrl;
+      requestData.media.streamType = "BUFFERED";
       if ("load" in actionHandlers) actionHandlers.load(contentUrl);
       setTimeout(function() {mediaEvent("loadedmetadata");}, 100);
       return requestData;
@@ -89,6 +90,9 @@
       if (requestData.jump == -1 && "previoustrack" in actionHandlers) actionHandlers.previoustrack();
       if (requestData.jump == 1 && "nexttrack" in actionHandlers) actionHandlers.nexttrack();
     });
+    playerManager.setMessageInterceptor(cast.framework.messages.MessageType.SEEK, async function(requestData) {
+      if ("seekto" in actionHandlers) actionHandlers.seekto({seekTime: requestData.currentTime});
+    });
     const options = new cast.framework.CastReceiverOptions();
     options.supportedCommands = cast.framework.messages.Command.STREAM_TRANSFER;
     options.disableIdleTimeout = true;
@@ -96,7 +100,7 @@
     options.mediaElement = mediaElement;
     context.start(options);
     updateSupportedMediaCommands = function() {
-      const actionMapping = {pause: 1, nexttrack: 64, previoustrack: 128};
+      const actionMapping = {pause: cast.framework.messages.Command.PAUSE, nexttrack: cast.framework.messages.Command.QUEUE_NEXT, previoustrack: cast.framework.messages.Command.QUEUE_PREV, seekto: cast.framework.messages.Command.SEEK};
       for (type in actionMapping) {
         if (actionHandlers[type]) {
           playerManager.addSupportedMediaCommands(actionMapping[type], true);
@@ -123,5 +127,6 @@
         playerManager.pause();
       }
     }, 1000);
+    window.playerManager = playerManager;
   })();
 })();

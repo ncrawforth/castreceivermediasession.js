@@ -127,6 +127,5 @@
         playerManager.pause();
       }
     }, 1000);
-    window.playerManager = playerManager;
   })();
 })();

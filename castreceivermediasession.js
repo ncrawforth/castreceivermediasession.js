@@ -65,7 +65,9 @@
     const mediaMetadata = new cast.framework.messages.MusicTrackMediaMetadata();
     playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, async function(requestData) {
       requestData.media.metadata = mediaMetadata;
-      if ("load" in actionHandlers) actionHandlers.load(requestData.media.contentUrl || requestData.media.contentId || requestData.media.entity);
+      let contentUrl = requestData.media.contentUrl || requestData.media.contentId || requestData.media.entity;
+      requestData.media.contentUrl = requestData.media.contentId = requestData.media.entity = contentUrl;
+      if ("load" in actionHandlers) actionHandlers.load(contentUrl);
       setTimeout(function() {mediaEvent("loadedmetadata");}, 100);
       return requestData;
     });

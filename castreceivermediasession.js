@@ -87,29 +87,29 @@
       let contentUrl = requestData.media.contentUrl || requestData.media.contentId || requestData.media.entity;
       requestData.media.contentUrl = requestData.media.contentId = requestData.media.entity = contentUrl;
       requestData.media.streamType = "BUFFERED";
-      if ("load" in actionHandlers) actionHandlers.load(contentUrl);
+      if ("load" in actionHandlers) actionHandlers.load({action: "load", contentUrl: contentUrl});
       return requestData;
     });
     playerManager.setMessageInterceptor(cast.framework.messages.MessageType.PLAY, async function(requestData) {
       if (requestData.requestId != 0) {
-        if ("play" in actionHandlers) actionHandlers.play();
+        if ("play" in actionHandlers) actionHandlers.play({action: "play"});
       } else {
         return requestData;
       }
     });
     playerManager.setMessageInterceptor(cast.framework.messages.MessageType.PAUSE, async function(requestData) {
       if (requestData.requestId != 0) {
-        if ("pause" in actionHandlers) actionHandlers.pause();
+        if ("pause" in actionHandlers) actionHandlers.pause({action: "pause"});
       } else {
         return requestData;
       }
     });
     playerManager.setMessageInterceptor(cast.framework.messages.MessageType.QUEUE_UPDATE, async function(requestData) {
-      if (requestData.jump == -1 && "previoustrack" in actionHandlers) actionHandlers.previoustrack();
-      if (requestData.jump == 1 && "nexttrack" in actionHandlers) actionHandlers.nexttrack();
+      if (requestData.jump == -1 && "previoustrack" in actionHandlers) actionHandlers.previoustrack({action: "previoustrack"});
+      if (requestData.jump == 1 && "nexttrack" in actionHandlers) actionHandlers.nexttrack({action: "nexttrack"});
     });
     playerManager.setMessageInterceptor(cast.framework.messages.MessageType.SEEK, async function(requestData) {
-      if ("seekto" in actionHandlers) actionHandlers.seekto({seekTime: requestData.currentTime});
+      if ("seekto" in actionHandlers) actionHandlers.seekto({action: "seekto", seekTime: requestData.currentTime});
     });
     const options = new cast.framework.CastReceiverOptions();
     options.supportedCommands = cast.framework.messages.Command.STREAM_TRANSFER | cast.framework.messages.Command.SET_VOLUME;

@@ -26,5 +26,5 @@ The following actions are supported by ```navigator.mediaSession.setActionHandle
 ```navigator.mediaSession.metadata```, ```navigator.mediaSession.playbackState``` and ```navigator.mediaSession.setPositionState``` work more-or-less according to the Media Session spec.
 
 ## What doesn't work
-* The contents of ```MediaMetadata.artwork``` is currently ignored.
+* The contents of ```MediaMetadata.artwork``` are currently ignored.
 * Exceptions specified by the Media Session spec are not raised.

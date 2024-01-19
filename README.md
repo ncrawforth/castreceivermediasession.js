@@ -22,6 +22,7 @@ The following actions are supported by ```navigator.mediaSession.setActionHandle
 * **nexttrack**
 * **previoustrack**
 * **seekto**
+  
 ```navigator.mediaSession.metadata```, ```navigator.mediaSession.playbackState``` and ```navigator.mediaSession.setPositionState``` work more-or-less according to the Media Session spec.
 
 ## What doesn't work

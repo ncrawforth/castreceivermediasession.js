@@ -7,6 +7,7 @@
     }
   }
   let updateSupportedMediaCommands = function() {};
+  let mediaSrc = "";
   const mediaElement = {
     addEventListener: function(type, listener) {
       if (!(type in eventListeners)) eventListeners[type] = [];
@@ -26,28 +27,32 @@
     play: function() {},
     duration: Infinity,
     currentTime: 0,
-    src: "",
+    set src(v) {mediaSrc = v; setTimeout(function() {mediaEvent("loadedmetadata");}, 100);},
+    get src() {return mediaSrc;},
     volume: 1,
     muted: false,
     paused: true,
     toString: function() {return "mediaElement";}
   };
   navigator.mediaSession.setActionHandler = function(type, handler) {
-    if (type == "load" && !("load" in actionHandlers) && mediaElement.src != "") {
-      handler(mediaElement.src);
+    if (type == "load" && !("load" in actionHandlers) && mediaSrc != "") {
+      handler(mediaSrc);
     }
     actionHandlers[type] = handler;
     updateSupportedMediaCommands();
   };
 
-  let playbackStart = 0;
-  setInterval(function() {
-    if (navigator.mediaSession.playbackState == "playing") {
-      if (playbackStart == 0) playbackStart = (new Date().getTime() / 1000) - mediaElement.currentTime;
-      mediaElement.currentTime = (new Date().getTime() / 1000) - playbackStart;
-      mediaEvent("timeupdate");
-    }
-  }, 500);
+  let advanceTimeout = null;
+  function advanceTime() {
+    clearTimeout(advanceTimeout);
+    advanceTimeout = setTimeout(function() {
+      if (navigator.mediaSession.playbackState == "playing") {
+        mediaElement.currentTime += mediaElement.playbackRate / 2;
+        mediaEvent("timeupdate");
+        advanceTime();
+      }
+    }, 500);
+  }
       
   navigator.mediaSession.setPositionState = function(state) {
     if (state.duration && mediaElement.duration != state.duration) {
@@ -57,6 +62,7 @@
     if (state.position && mediaElement.currentTime != state.position) {
       mediaElement.currentTime = state.position;
       mediaEvent("timeupdate");
+      advanceTime();
     }
     if (state.position) {
       playbackStart = (new Date().getTime() / 1000) - state.position;
@@ -82,7 +88,6 @@
       requestData.media.contentUrl = requestData.media.contentId = requestData.media.entity = contentUrl;
       requestData.media.streamType = "BUFFERED";
       if ("load" in actionHandlers) actionHandlers.load(contentUrl);
-      setTimeout(function() {mediaEvent("loadedmetadata");}, 100);
       return requestData;
     });
     playerManager.setMessageInterceptor(cast.framework.messages.MessageType.PLAY, async function(requestData) {
@@ -134,6 +139,7 @@
       }
       if (navigator.mediaSession.playbackState == "playing") {
         playerManager.play();
+        advanceTime();
         clearTimeout(timeout);
         timeout = setTimeout(function() {context.stop();}, 900000);
       } else {

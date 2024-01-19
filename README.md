@@ -16,12 +16,12 @@ Implementing a Custom Web Receiver for Google Cast is much more complex than it 
 
 ## What works
 The following actions are supported by ```navigator.mediaSession.setActionHandler```:
-* **load** receives a dict containing *contentUrl* when the sender app sends a URL to load.
+* **load** is non-standard. The action hander is called with a dict containing *contentUrl* when the sender app sends a URL to load.
 * **play**
 * **pause**
 * **nexttrack**
 * **previoustrack**
-* **seekto** receives a dict containing *seekTime*.
+* **seekto**
   
 ```navigator.mediaSession.metadata```, ```navigator.mediaSession.playbackState``` and ```navigator.mediaSession.setPositionState``` work more-or-less according to the Media Session spec.
 

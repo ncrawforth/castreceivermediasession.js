@@ -1,5 +1,5 @@
 # castreceivermediasession.js
-An implementation of the [HTML5 Media Session API](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API) for Google Cast receivers.
+An implementation of the [HTML5 Media Session API](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API) for Google Cast Custom Web Receivers.
 
 Implementing a Custom Web Receiver for Google Cast is much more complex than it ought to be. This library hooks up navigator.mediaSession to the Cast Web Receiver SDK and makes it much simpler.
 

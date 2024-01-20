@@ -1,4 +1,4 @@
-(function() {
+if (navigator.userAgent.match(/CrKey/)) (function() {
   const actionHandlers = {};
   const eventListeners = {};
   function mediaEvent(type) {

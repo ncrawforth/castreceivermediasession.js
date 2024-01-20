@@ -28,3 +28,6 @@ The following actions are supported by ```navigator.mediaSession.setActionHandle
 ## What doesn't work
 * The contents of ```MediaMetadata.artwork``` are currently ignored.
 * Exceptions specified by the Media Session spec are not raised.
+
+## To do
+* Detect when not running on a cast device and don't override navigator.mediaSession, to allow debugging a cast receiver in a web browser.

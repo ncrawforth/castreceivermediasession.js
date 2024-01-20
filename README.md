@@ -6,11 +6,44 @@ Implementing a Custom Web Receiver for Google Cast is much more complex than it 
 ## Usage
 ``` javascript
 <script src="castreceivermediasession.js"></script>
+<video id="player"></video>
 <script>
-  navigator.mediaSession.setActionHandler("load", function(dict) {
-    navigator.mediaSession.metadata = new MediaMetadata({title: dict.contentUrl});
+
+  // Reflect playback state in sender controls
+  player.onplaying = function() {
     navigator.mediaSession.playbackState = "playing";
+  };
+  player.onpause = function() {
+    navigator.mediaSession.playbackState = "paused";
+  };
+  player.ontimeupdate = function() {
+    navigator.mediaSession.setPositionState({position: player.currentTime, duration: player.duration});
+  };
+
+  // Control playback using sender controls
+  navigator.mediaSession.setActionHandler("play", function() {
+    player.play();
+  });
+  navigator.mediaSession.setActionHandler("pause", function() {
+    player.pause();
+  });
+  navigator.mediaSession.setActionHandler("seekto", function(dict) {
+    player.currentTime = dict.seekTime;
+  });
+
+  // Load media
+  try {
+    navigator.mediaSession.setActionHandler("load", function(dict) {
+      navigator.mediaSession.metadata = new MediaMetadata({title: dict.contentUrl});
+      player.src = dict.contentUrl;
+      player.play();
+    });
+  } catch { // Fallback for "load" when debugging in a browser
+    navigator.mediaSession.metadata = new MediaMetadata({title: "Big Buck Bunny"});
+    player.src = "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4";
+    player.onclick = function() {player.play();};
   }
+
 </script>
 ```
 
@@ -22,8 +55,6 @@ The following actions are supported by ```navigator.mediaSession.setActionHandle
 * **nexttrack**
 * **previoustrack**
 * **seekto**
-  
-```navigator.mediaSession.metadata```, ```navigator.mediaSession.playbackState``` and ```navigator.mediaSession.setPositionState``` work more-or-less according to the Media Session spec.
 
 ## What doesn't work
 * The contents of ```MediaMetadata.artwork``` are currently ignored.

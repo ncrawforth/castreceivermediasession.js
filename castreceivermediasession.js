@@ -129,6 +129,7 @@ if (navigator.userAgent.match(/CrKey/)) (function() {
     };
     updateSupportedMediaCommands();
     let timeout = null;
+    let oldPlaybackState = "none";
     setInterval(function() {
       let md = navigator.mediaSession.metadata || {title: "", artist: "", album: ""};
       if (mediaMetadata.title != md.title || mediaMetadata.artist != md.artist || mediaMetadata.albumName != md.album) {
@@ -137,13 +138,18 @@ if (navigator.userAgent.match(/CrKey/)) (function() {
         mediaMetadata.albumName = md.album;
         playerManager.broadcastStatus(true);
       }
+      if (navigator.mediaSession.playbackState != oldPlaybackState) {
+        if (navigator.mediaSession.playbackState == "playing") {
+          playerManager.play();
+        } else {
+          playerManager.pause();
+        }
+        oldPlaybackState = navigator.mediaSession.playbackState;
+      }
       if (navigator.mediaSession.playbackState == "playing") {
-        playerManager.play();
         advanceTime();
         clearTimeout(timeout);
         timeout = setTimeout(function() {context.stop();}, 900000);
-      } else {
-        playerManager.pause();
       }
     }, 1000);
   })();

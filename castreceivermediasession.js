@@ -47,11 +47,11 @@ if (navigator.userAgent.match(/CrKey/)) (function() {
     clearTimeout(advanceTimeout);
     advanceTimeout = setTimeout(function() {
       if (navigator.mediaSession.playbackState == "playing") {
-        mediaElement.currentTime += mediaElement.playbackRate / 2;
+        mediaElement.currentTime += mediaElement.playbackRate * 0.4;
         mediaEvent("timeupdate");
         advanceTime();
       }
-    }, 500);
+    }, 400);
   }
       
   navigator.mediaSession.setPositionState = function(state) {

@@ -27,7 +27,7 @@ if (navigator.userAgent.match(/CrKey/)) (function() {
     play: function() {},
     duration: Infinity,
     currentTime: 0,
-    set src(v) {mediaSrc = v; setTimeout(function() {mediaEvent("loadedmetadata");}, 100);},
+    set src(v) {mediaSrc = v;},
     get src() {return mediaSrc;},
     volume: 1,
     muted: false,
@@ -64,9 +64,6 @@ if (navigator.userAgent.match(/CrKey/)) (function() {
       mediaEvent("timeupdate");
       advanceTime();
     }
-    if (state.position) {
-      playbackStart = (new Date().getTime() / 1000) - state.position;
-    }
     if (state.playbackRate && mediaElement.playbackRate != state.playbackRate) {
       mediaElement.playbackRate = state.playbackRate;
       mediaEvent("ratechange");
@@ -87,7 +84,8 @@ if (navigator.userAgent.match(/CrKey/)) (function() {
       let contentUrl = requestData.media.contentUrl || requestData.media.contentId || requestData.media.entity;
       requestData.media.contentUrl = requestData.media.contentId = requestData.media.entity = contentUrl;
       requestData.media.streamType = "BUFFERED";
-      if ("load" in actionHandlers) actionHandlers.load({action: "load", contentUrl: contentUrl});
+      if ("load" in actionHandlers) await actionHandlers.load({action: "load", contentUrl: contentUrl});
+      setTimeout(function() {mediaEvent("loadedmetadata");}, 100);
       return requestData;
     });
     playerManager.setMessageInterceptor(cast.framework.messages.MessageType.PLAY, async function(requestData) {

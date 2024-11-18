@@ -32,6 +32,7 @@ if (navigator.userAgent.match(/CrKey/)) (function() {
     volume: 1,
     muted: false,
     paused: true,
+    dataset: {},
     toString: function() {return "mediaElement";}
   };
   navigator.mediaSession.setActionHandler = function(type, handler) {
